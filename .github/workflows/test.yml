@@ -14,9 +14,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Download era_test_node binary from GitHub Releases
+      run: |
+        Invoke-WebRequest -Uri "https://github.com/idea404/etn-windows/releases/download/v0.0.1/era_test_node.exe" -OutFile "era_test_node.exe"
+      shell: powershell
+
     - name: Run era_test_node binary
       run: |
-        ./x86_64-pc-windows-gnu/release/era_test_node.exe run &
+        ./era_test_node.exe run &
+      shell: cmd
 
     - name: Setup Node.js
       uses: actions/setup-node@v2
