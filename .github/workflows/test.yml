@@ -20,9 +20,7 @@ jobs:
       shell: powershell
 
     - name: Run era_test_node binary
-      run: |
-        ./era_test_node.exe run &
-      shell: cmd
+      run: era_test_node.exe run &
 
     - name: Setup Node.js
       uses: actions/setup-node@v2
