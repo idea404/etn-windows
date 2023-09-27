@@ -1,0 +1,53 @@
+name: Test Windows ETN
+
+on: 
+  push:
+    branches: 
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run era_test_node binary
+      run: |
+        ./x86_64-pc-windows-gnu/release/era_test_node.exe run &
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 'lts/*'
+
+    - name: Wait for era_test_node to be ready
+      run: |
+        do {
+          Start-Sleep -Seconds 1
+          $response = Invoke-WebRequest -Uri "http://127.0.0.1:8011" -Method POST -Body '{"jsonrpc":"2.0","method":"net_version","id":1}' -ContentType 'application/json' -ErrorAction SilentlyContinue
+        } while ($null -eq $response -or $response.StatusCode -ne 200)
+      shell: powershell
+
+    - name: Install dependencies for custom-aa
+      run: |
+        cd custom-aa
+        yarn
+
+    - name: Custom AA tests
+      run: |
+        cd custom-aa
+        yarn test
+
+    - name: Test Endpoints
+      run: |
+        $requests = Get-Content -Path .\test_endpoints.http -Raw -ErrorAction Stop | Out-String | Split-String -Delimiter "###"
+        foreach ($request in $requests) {
+            $response = curl -s -X POST -H "Content-Type: application/json" -d $request http://127.0.0.1:8011
+            if ($response -eq $null) {
+                throw "Request failed: $request"
+            }
+        }
+      shell: powershell
