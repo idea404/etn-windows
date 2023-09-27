@@ -26,8 +26,9 @@ jobs:
 
     - name: Run era_test_node binary
       run: |
-        era_test_node.exe --show-calls run &
-        timeout /t 10
+        Start-Process -NoNewWindow -FilePath "era_test_node.exe" -ArgumentList "--show-calls", "run"
+        Start-Sleep -Seconds 10
+      shell: pwsh
 
     - name: Wait for era_test_node to be ready
       run: |
