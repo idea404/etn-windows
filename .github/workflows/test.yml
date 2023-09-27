@@ -14,24 +14,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Download era_test_node binary from GitHub Releases
-      run: |
-        Invoke-WebRequest -Uri "https://github.com/idea404/etn-windows/releases/download/v0.0.1/era_test_node.exe" -OutFile "era_test_node.exe"
-      shell: powershell
-
-    - name: Run era_test_node binary
-      run: |
-        powershell .\run_era_test_node.ps1
-        timeout /t 3
-
-    - name: Display initial era_test_node logs
-      run: Get-Content era_test_node.log -Tail 20
-      shell: powershell
-
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
         node-version: 'lts/*'
+
+    - name: Download era_test_node binary from GitHub Releases
+      run: |
+        Invoke-WebRequest -Uri "https://github.com/idea404/etn-windows/releases/download/v0.0.1/era_test_node.exe" -OutFile "era_test_node.exe"
+        shell: powershell
+
+    - name: Run era_test_node binary
+      run: |
+        era_test_node.exe --show-calls run &
+        timeout /t 10
 
     - name: Wait for era_test_node to be ready
       run: |
