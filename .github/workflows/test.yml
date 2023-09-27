@@ -21,9 +21,8 @@ jobs:
 
     - name: Run era_test_node binary
       run: |
-        cmd /c "era_test_node.exe --show-calls run > era_test_node.log 2>&1" &
+        start /b run_era_test_node.bat
         timeout /t 3
-      shell: cmd
 
     - name: Display initial era_test_node logs
       run: Get-Content era_test_node.log -Tail 20
