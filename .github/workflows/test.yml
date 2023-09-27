@@ -22,7 +22,7 @@ jobs:
     - name: Download era_test_node binary from GitHub Releases
       run: |
         Invoke-WebRequest -Uri "https://github.com/idea404/etn-windows/releases/download/v0.0.1/era_test_node.exe" -OutFile "era_test_node.exe"
-        shell: powershell
+      shell: powershell
 
     - name: Run era_test_node binary
       run: |
