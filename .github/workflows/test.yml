@@ -27,16 +27,27 @@ jobs:
     - name: Run era_test_node binary
       run: |
         Start-Process -NoNewWindow -FilePath "era_test_node.exe" -ArgumentList "--show-calls", "run"
-        Start-Sleep -Seconds 10
+        Start-Sleep -Seconds 20
+      shell: pwsh
+
+    - name: Check if era_test_node is running
+      run: |
+        Get-Process | Where-Object { $_.ProcessName -like "era_test_node" }
       shell: pwsh
 
     - name: Wait for era_test_node to be ready
       run: |
+        $attempt = 0
         do {
-          Start-Sleep -Seconds 1
+          $attempt++
+          Write-Output "Attempt $attempt to connect to era_test_node..."
+          Start-Sleep -Seconds 2
           $response = Invoke-WebRequest -Uri "http://127.0.0.1:8011" -Method POST -Body '{"jsonrpc":"2.0","method":"net_version","id":1}' -ContentType 'application/json' -ErrorAction SilentlyContinue
-        } while ($null -eq $response -or $response.StatusCode -ne 200)
-      shell: powershell
+        } while (($null -eq $response -or $response.StatusCode -ne 200) -and $attempt -le 30)
+        if ($null -eq $response -or $response.StatusCode -ne 200) {
+          throw "Failed to connect to era_test_node after 30 attempts."
+        }
+      shell: pwsh
 
     - name: Install dependencies for custom-aa
       run: |
