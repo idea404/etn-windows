@@ -24,14 +24,14 @@ jobs:
         Invoke-WebRequest -Uri "https://github.com/idea404/etn-windows/releases/download/v0.0.1/era_test_node.exe" -OutFile "era_test_node.exe"
       shell: powershell
 
-    - name: List files in current directory
+    - name: Check executable permissions
       run: |
-        Get-ChildItem -Path .\
+        (Get-Acl .\era_test_node.exe).AccessToString
       shell: pwsh
-
-    - name: Run era_test_node binary in foreground
-      run: |
-        .\era_test_node.exe --show-calls run
+    
+    - name: Run era_test_node binary in CMD
+      run: .\era_test_node.exe --show-calls run
+      shell: cmd
 
     - name: Check if era_test_node is running
       run: |
