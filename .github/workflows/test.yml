@@ -23,6 +23,7 @@ jobs:
       run: |
         start /b run_era_test_node.bat
         timeout /t 3
+      shell: cmd
 
     - name: Display initial era_test_node logs
       run: Get-Content era_test_node.log -Tail 20
